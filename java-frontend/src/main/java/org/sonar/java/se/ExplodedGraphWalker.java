@@ -301,15 +301,36 @@ public class ExplodedGraphWalker {
     setNode(savedNode);
   }
 
-  public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
+  /**
+   * @return true if yield was created and issue should be reported, false otherwise (matching catch block).
+   */
+  public boolean addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
+    // Check if a matching catch block is present, if yes, follow that path.
+    Set<CFG.Block> exceptionBlocks = node.programPoint.block.exceptions();
+    Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
+    SymbolicValue.ExceptionalSymbolicValue exceptionSV = constraintManager.createExceptionalSymbolicValue(exceptionType);
+    // only consider the first match, as order of catch block is important
+    Optional<CFG.Block> firstMatchingCatchBlock = exceptionBlocks.stream()
+      .filter(CFG.Block.IS_CATCH_BLOCK)
+      .filter(b -> isCaughtByBlock(exceptionSV.exceptionType(), b))
+      .sorted((b1, b2) -> Integer.compare(b2.id(), b1.id()))
+      .findFirst();
+
+    if (firstMatchingCatchBlock.isPresent()) {
+      // found a catch block relevant for this exception
+      ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(exceptionSV);
+      enqueue(new ProgramPoint(firstMatchingCatchBlock.get()), newExceptionalState, null);
+      return false;
+    }
+
     // in order to create such Exceptional Yield, a parameter of the method has to be the cause of the exception
     if (methodBehavior != null && methodBehavior.parameters().contains(target)) {
-      Type exceptionType = semanticModel.getClassType(exceptionFullyQualifiedName);
-      ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(constraintManager.createExceptionalSymbolicValue(exceptionType));
+      ProgramState newExceptionalState = exceptionalState.clearStack().stackValue(exceptionSV);
       ExplodedGraph.Node exitNode = explodedGraph.node(node.programPoint, newExceptionalState);
       methodBehavior.createExceptionalCheckBasedYield(target, exitNode, exceptionType, check);
       exitNode.addParent(node, null);
     }
+    return true;
   }
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {

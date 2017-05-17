@@ -57,4 +57,13 @@ class A {
     java.util.Optional<String> op = java.util.Optional.empty();
     op.get(); // Noncompliant
   }
+
+  private caughtException() {
+    try {
+      java.util.Optional<String> op = java.util.Optional.empty();
+      op.get(); // compliant, exception is expected.
+    }catch (java.util.NoSuchElementException e) {
+      System.out.println("got it!");
+    }
+  }
 }

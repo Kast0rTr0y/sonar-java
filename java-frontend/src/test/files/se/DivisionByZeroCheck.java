@@ -427,3 +427,14 @@ public class TwoCompoundAssignments {
     this.mSum += sSumAdd;
   }
 }
+
+public class CaughtException {
+  private void foo() {
+    try {
+      int b = 0;
+      int a = 12 / b; // Noncompliant : should not be raised because exception is caught but we don't handle exceptions raised from expression.
+    } catch (java.lang.ArithmeticException e) {
+      System.out.println("gotcha");
+    }
+  }
+}

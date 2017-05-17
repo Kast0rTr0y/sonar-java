@@ -38,7 +38,7 @@ public interface CheckerContext {
 
   void addTransition(ProgramState state);
 
-  void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check);
+  boolean addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check);
 
   ProgramState getState();
 

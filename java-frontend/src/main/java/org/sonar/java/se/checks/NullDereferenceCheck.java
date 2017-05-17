@@ -22,7 +22,6 @@ package org.sonar.java.se.checks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
@@ -116,11 +115,14 @@ public class NullDereferenceCheck extends SECheck {
     ProgramState programState = context.getState();
     ObjectConstraint constraint = programState.getConstraint(currentVal, ObjectConstraint.class);
     if (constraint != null && constraint.isNull()) {
-      NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), currentVal, syntaxNode);
-      detectedIssues.peek().add(issue);
 
       // we reported the issue and stopped the exploration, but we still need to create a yield for x-procedural calls
-      context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
+      boolean shouldReport = context.addExceptionalYield(currentVal, programState, JAVA_LANG_NPE, this);
+      if (shouldReport) {
+        NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), currentVal, syntaxNode);
+        detectedIssues.peek().add(issue);
+      }
+
       return null;
     }
     constraint = programState.getConstraint(currentVal, ObjectConstraint.class);

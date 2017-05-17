@@ -117,8 +117,8 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public void addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
-    explodedGraphWalker.addExceptionalYield(target, exceptionalState, exceptionFullyQualifiedName, check);
+  public boolean addExceptionalYield(SymbolicValue target, ProgramState exceptionalState, String exceptionFullyQualifiedName, SECheck check) {
+    return explodedGraphWalker.addExceptionalYield(target, exceptionalState, exceptionFullyQualifiedName, check);
   }
 
   @Override

@@ -770,3 +770,12 @@ class finalFieldSetToNull {
     this.field.toString(); // flow@fieldNull {{Implies 'field' is null.}} flow@fieldNull {{'field' is dereferenced.}}
   }
 }
+class CaughtNPE {
+  void foo(@Nullable Object o) {
+    try {
+      o.toString(); // NPE is expected and caught so no issue should be raised
+    } catch (NullPointerException npe) {
+      System.out.println("gotta catch'em all");
+    }
+  }
+}

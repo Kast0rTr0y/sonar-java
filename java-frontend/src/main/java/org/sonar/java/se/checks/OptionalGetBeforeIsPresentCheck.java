@@ -129,8 +129,9 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
         constraintManager.setValueFactory(() -> new OptionalSymbolicValue(peek));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
-        context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
-        reportIssue(tree);
+        if(context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check)) {
+          reportIssue(tree);
+        }
         programState = null;
       }
     }
