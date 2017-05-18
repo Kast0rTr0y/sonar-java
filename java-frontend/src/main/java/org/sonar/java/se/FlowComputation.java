@@ -234,7 +234,7 @@ public class FlowComputation {
       List<JavaFileScannerContext.Location> lcFlow = flowFromLearnedConstraints(edge, filterRedundantObjectDomain(learnedConstraints));
       flowBuilder.addAll(lcFlow);
 
-      boolean endOfPath = visitedAllParents(edge) || shouldTerminate(learnedConstraints);
+      boolean endOfPath = visitedAllParents(edge) || shouldTerminate(edge.learnedConstraints());
 
       if (endOfPath) {
         flowBuilder.addAll(flowForNullableMethodParameters(edge.parent));
@@ -295,7 +295,7 @@ public class FlowComputation {
     }
 
     private boolean shouldTerminate(Set<LearnedConstraint> learnedConstraints) {
-      return learnedConstraints.stream().map(LearnedConstraint::constraint).anyMatch(terminateTraversal);
+      return learnedConstraints.stream().filter(lc -> symbolicValues.contains(lc.symbolicValue())).map(LearnedConstraint::constraint).anyMatch(terminateTraversal);
     }
 
     Optional<LearnedAssociation> learnedAssociation(ExplodedGraph.Edge edge) {
