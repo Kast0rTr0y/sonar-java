@@ -45,6 +45,8 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.EQUA
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.METHOD_EQUALS;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
+import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
 
@@ -136,7 +138,10 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   RelationalSymbolicValue inverse() {
-    return new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
+    RelationalSymbolicValue inverted = new RelationalSymbolicValue(kind.inverse(), leftOp, rightOp);
+    inverted.leftSymbol = leftSymbol;
+    inverted.rightSymbol = rightSymbol;
+    return inverted;
   }
 
   private List<ProgramState> copyAllConstraints(ProgramState programState) {
@@ -430,9 +435,14 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     }
   }
 
-  private boolean isEquality() {
+  public boolean isEquality() {
     return kind == Kind.EQUAL || kind == Kind.METHOD_EQUALS;
   }
+
+  public boolean isInequality() {
+    return kind == NOT_EQUAL || kind == NOT_METHOD_EQUALS;
+  }
+
 
   @Override
   public int hashCode() {

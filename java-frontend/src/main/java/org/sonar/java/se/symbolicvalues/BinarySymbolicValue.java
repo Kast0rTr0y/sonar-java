@@ -83,4 +83,13 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     return rightOp;
   }
 
+  @Nullable
+  public Symbol getLeftSymbol() {
+    return leftSymbol;
+  }
+
+  @Nullable
+  public Symbol getRightSymbol() {
+    return rightSymbol;
+  }
 }

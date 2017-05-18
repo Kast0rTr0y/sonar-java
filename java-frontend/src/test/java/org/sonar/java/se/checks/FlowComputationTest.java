@@ -132,4 +132,9 @@ public class FlowComputationTest {
       new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck()});
   }
 
+
+  @Test
+  public void test_relation_with_symbols() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/RelationWithSymbols.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
 }

@@ -50,9 +50,8 @@ class A {
   }
 
   void npe1(Object a) {
-    Object b = null;
-    // FIXME SONARJAVA-2272 Incorrect symbol is reported when constraint is learned on SV
-    if (a == b) { // flow@npe1 {{Implies 'b' is null.}}
+    Object b = null; // flow@npe1 {{'b' is assigned null.}}
+    if (a == b) { // flow@npe1 {{Implies 'a' has the same value as 'b'.}}
       a.toString(); // Noncompliant [[flows=npe1]] flow@npe1 {{'a' is dereferenced.}}
     }
   }
